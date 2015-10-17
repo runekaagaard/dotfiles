@@ -38,18 +38,21 @@ set expandtab       " tabs are spaces
 
 """ UI
 
+set hidden
 set number              " show line numbers
 set cursorline          " highlight current line
 filetype indent on      " load filetype-specific indent files
 set wildmenu            " visual autocomplete for command menu
 set lazyredraw          " redraw only when we need to.
 set showmatch           " highlight matching [{()}]
-set ttyfast                     " faster redraw
-set colorcolumn=79
-" always open help in new tab 
-cabbrev help tab help 
-cabbrev he tab help 
-cabbrev h tab help 
+set ttyfast             " faster redraw
+set colorcolumn=79      " vertical ruler 
+set backspace=2         " allow deletion in insert mode
+
+" Help always opens in a new tab to not mess with the current layout
+cabbrev help tab help
+cabbrev he tab help
+cabbrev h tab help
 
 " Enable mouse use in all modes
 set mouse=a
@@ -62,6 +65,7 @@ set ttymouse=xterm2
 noremap <C-D> :update<CR>
 vnoremap <C-D> <C-C>:update<CR>
 inoremap <C-D> <C-O>:update<CR>
+set wildignore+=.pyc
 
 """ Command line
 
@@ -87,11 +91,18 @@ python del powerline_setup
 """ ctrl+p
 
 set runtimepath^=~/.vim/bundle/ctrlp.vim
+let g:ctrlp_custom_ignore = '\vbuild/|dist/|venv/|target/|\.(o|swp|pyc|egg)$'
+let g:ctrlp_open_func = { 'files': 'CustomOpenFunc' }
+function! CustomOpenFunc(action, line)
+    call call('ctrlp#acceptfile', [':t', a:line])
+endfunction
 
 """ nerdtree
 
 let g:nerdtree_tabs_focus_on_files=1
 let g:NERDTreeMouseMode=3
+let NERDTreeIgnore = ['\.pyc$', 'build', 'venv', 'egg', 'egg-info/', 'dist']
+let NERDTreeChDirMode=0
 map <C-m> :NERDTreeTabsFind<CR>
 map <C-n> :NERDTreeSteppedOpen<CR>
 unmap <CR>
@@ -109,14 +120,6 @@ let g:jedi#show_call_signatures = 2
 map <S-w> :Sbd<CR>
 map <S-q> :Sbdm<CR>
 
-""" ctrlp
-
-" Enter opens in a new tab
-let g:ctrlp_prompt_mappings = {
-    \ 'AcceptSelection("e")': ['<c-t>'],
-    \ 'AcceptSelection("t")': ['<cr>', '<2-LeftMouse>'],
-    \ }
-
 """ syntastic
 
 set statusline+=%#warningmsg#
@@ -127,3 +130,4 @@ let g:syntastic_auto_loc_list = 0
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 1
 let g:syntastic_quiet_messages = { "type": "style" }
+let g:syntastic_full_redraws = 1
