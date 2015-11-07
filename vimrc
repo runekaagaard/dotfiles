@@ -49,10 +49,11 @@ filetype indent on      " load filetype-specific indent files
 set wildmenu            " visual autocomplete for command menu
 set lazyredraw          " redraw only when we need to.
 set showmatch           " highlight matching [{()}]
-"set ttyfast             " faster redraw
 set colorcolumn=79      " vertical ruler 
 set backspace=2         " allow deletion in insert mode
 set ignorecase
+" No automatic comments
+:set formatoptions-=cro
 
 " Help always opens in a new tab to not mess with the current layout
 cabbrev help tab help
@@ -61,36 +62,77 @@ cabbrev h tab help
 
 " Enable mouse use in all modes
 set mouse=a
-"
+ 
 " Set this to the name of your terminal that supports mouse codes.
 " Must be one of: xterm, xterm2, netterm, dec, jsbterm, pterm
 if !has('nvim')
     set ttymouse=xterm2
 endif
+ 
+" Some wildignores. Why doesn't nerdtree and ack not support this? 
 set wildignore+=.pyc
 set wildignore+=.orig
 
-" Use tab and shif tab to indent lines, 
+""" Heretic 'normal' editor behaviour.
 
+" backspace and cursor keys wrap to previous/next line
+set backspace=indent,eol,start whichwrap+=<,>,[,]
+
+" backspace in Visual mode deletes selection
+vnoremap <BS> d
+ 
+" Use tab and shif tab to indent lines.
 vnoremap <s-tab> <gv
 vnoremap <tab> >gv
 nnoremap <s-tab> <<
 nnoremap <tab> >>
-
-"This unsets the last search pattern register by hitting return
-"nnoremap <CR> :noh<CR><CR>
-
-" Use enter and backspace to add and delete lines.
-
-nnoremap <CR> o <esc> 0k
-nnoremap <BS> "_dd <esc> 0k
  
+" Use enter and backspace to add and delete lines.
+nnoremap <CR> O<esc><down>
+nnoremap <BS> _dd^
+" Alt-d deletes line above.
+nnoremap ∂ k_dd^
+
+" alt-j/k moves lines.
+nnoremap ‹ :m .+1<CR>==
+nnoremap ∆ :m .-2<CR>==
+inoremap ‹ <Esc>:m .+1<CR>==gi
+inoremap ∆ <Esc>:m .-2<CR>==gi
+vnoremap ‹ :m '>+1<CR>gv=gv
+vnoremap ∆ :m '<-2<CR>gv=gv<Paste>
+
+" CTRL-A is Select all
+noremap <C-A> gggH<C-O>G
+inoremap <C-A> <C-O>gg<C-O>gH<C-O>G
+cnoremap <C-A> <C-C>gggH<C-O>G
+onoremap <C-A> <C-C>gggH<C-O>G
+snoremap <C-A> <C-C>gggH<C-O>G
+xnoremap <C-A> <C-C>ggVG
+ 
+" shift+arrow selection
+nmap <S-Up> V^
+nmap <S-Down> V^
+nmap <S-Left> v<Left>
+nmap <S-Right> v<Right>
+vmap <S-Up> <Up>^
+vmap <S-Down> <Down>^
+vmap <S-Left> <Left>
+vmap <S-Right> <Right>
+imap <S-Up> <Esc>V^
+imap <S-Down> <Esc>V^
+imap <S-Left> <Esc><Right>v<Left>
+imap <S-Right> <Esc><Right>v<Right>
+
+" Use CTRL-S for saving, also in Insert mode
+noremap <C-S>		:update<CR>
+vnoremap <C-S>		<C-C>:update<CR>
+inoremap <C-S>		<C-O>:update<CR>
+
 """ Command line
  
 set noruler
 set noshowcmd
 set showtabline=2 " Always display the tabline, even if there is only one tab
-"""set noshowmode " Hide the default mode text (e.g. -- INSERT -- below the statusline)
 set laststatus=2 " Always display the statusline in all windows
 
 """ Leader
@@ -99,19 +141,17 @@ let mapleader=","
 
 """ Leader commands
 
+" Clear search highlighting. 
+nnoremap <leader><leader> :noh<CR><CR>
+" Open a split with the same file scrolled to the top for imports.
 nnoremap <leader>t :split <CR> gg
-
+" Save and reload vimrc. 
+nnoremap <leader>r :w <CR> :source ~/.vimrc <CR>
+ 
 """ Leaving insert mode.
 inoremap jk <esc> " jk is escape
 inoremap kj <esc>:w<CR> " kj escapses and saves
 inoremap lkj <esc> :w<CR> :q<CR> " lkj escapses and saves and quits
-
-""" Powerline
-
-"set encoding=utf-8
-"python from powerline.vim import setup as powerline_setup
-"python powerline_setup()
-"python del powerline_setup
 
 """ ctrl+p
 
@@ -126,11 +166,9 @@ endfunction
 
 let g:nerdtree_tabs_focus_on_files=1
 let g:NERDTreeMouseMode=3
-let NERDTreeIgnore = ['\.pyc$', 'build', 'venv', 'egg', 'egg-info/', 'dist']
+let NERDTreeIgnore = ['\.pyc$', 'build', 'venv', 'egg', 'egg-info/', 'dist', '\.orig$']
 let NERDTreeChDirMode=0
-map <C-d> :NERDTreeClose<CR>
 map <C-n> :NERDTreeSteppedOpen<CR>
-"unmap <CR>
 
 """ Tabs
 
@@ -141,6 +179,7 @@ map <C-l> :bn<cr>
 
 let g:jedi#show_call_signatures = 2
 
+""" Close buffer 'tabs'. 
 " https://github.com/cespare/vim-sbd
 map <S-w> :Sbd<CR>
 map <S-q> :Sbdm<CR>
@@ -167,29 +206,7 @@ if filereadable($VIRTUAL_ENV . '/.vimrc')
 endif
 
 """ buttabline
-
 let g:buftabline_indicators = 1
 
 """ Ack
 cabbrev A Ack! --ignore-file=is:tags
-
-" Mapping xclip clipboard support
-if has("unix")
-  let s:uname = system("uname -s")
-  if s:uname =~ "Darwin"
-    " On OSX
-    vmap <C-c> y:call system("pbcopy", getreg("\""))<CR>
-    nmap <C-v> :call setreg("\"",system("pbpaste"))<CR>
-  endif
-  if s:uname =~ "Linux"
-    " On Linux
-    " Without X server it will just use a temporal file
-    if system("echo $DISPLAY") =~ ""
-      vmap <C-c> y: call system("> /tmp/theClipboardWithoutX", getreg("\""))<CR>
-      map <C-v> :call setreg("\"", system("< /tmp/theClipboardWithoutX"))<CR>p
-    else
-      vmap <C-c> y: call system("xclip -i -selection clipboard", getreg("\""))<CR>
-      map <C-v> :call setreg("\"",system("xclip -o -selection clipboard"))<CR>p
-    endif
-  endif
-endif 
