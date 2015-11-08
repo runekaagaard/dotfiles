@@ -27,6 +27,7 @@ Plugin 'ap/vim-buftabline'
 call vundle#end()            " required
 filetype plugin indent on    " required
 
+
 """ Colors and syntax highlighting
 
 syntax enable
@@ -80,18 +81,38 @@ set backspace=indent,eol,start whichwrap+=<,>,[,]
 
 " backspace in Visual mode deletes selection
 vnoremap <BS> d
- 
+
+" Backspace is backspace in command mode.
+"function! RBackSpace()
+"    let c = col('.')
+"    if c == 1 
+"        execute "normal kJ0" 
+"    else
+"        execute "normal Xh" 
+"    endif
+"endfunction
+"nnoremap <silent> <BS> :call RBackSpace()<CR> 
+
+" Enter inserts a new line
+nnoremap <CR> O<esc><down>
+
+" Insert linebreak at cursor location.
+:nnoremap K i<CR><Esc><right> 
+
 " Use tab and shif tab to indent lines.
 vnoremap <s-tab> <gv
 vnoremap <tab> >gv
 nnoremap <s-tab> <<
-nnoremap <tab> >>
- 
-" Use enter and backspace to add and delete lines.
-nnoremap <CR> O<esc><down>
-nnoremap <BS> _dd^
+nnoremap <tab> >> 
+
 " Alt-d deletes line above.
 nnoremap ∂ k_dd^
+
+" Ctrl-d deletes line.
+nnoremap <C-D> _dd^
+
+" Space is space in command mode."
+nnoremap <space> i<space><esc>l
 
 " alt-j/k moves lines.
 nnoremap ‹ :m .+1<CR>==
@@ -100,6 +121,14 @@ inoremap ‹ <Esc>:m .+1<CR>==gi
 inoremap ∆ <Esc>:m .-2<CR>==gi
 vnoremap ‹ :m '>+1<CR>gv=gv
 vnoremap ∆ :m '<-2<CR>gv=gv<Paste>
+
+" alt-arrows moves lines.
+nnoremap <F24> :m .+1<CR>==
+nnoremap <F23> :m .-2<CR>==
+inoremap <F24> <Esc>:m .+1<CR>==gi
+inoremap <F23> <Esc>:m .-2<CR>==gi
+vnoremap <F24> :m '>+1<CR>gv=gv
+vnoremap <F23> :m '<-2<CR>gv=gv<Paste>
 
 " CTRL-A is Select all
 noremap <C-A> gggH<C-O>G
@@ -174,6 +203,8 @@ map <C-n> :NERDTreeSteppedOpen<CR>
 
 map <C-k> :bp<cr>
 map <C-l> :bn<cr>
+map <C-left> :bp<cr>
+map <C-right> :bn<cr>
 
 """ Jedi-vim
 
@@ -197,7 +228,7 @@ let g:syntastic_quiet_messages = { "type": "style" }
 let g:syntastic_full_redraws = 1
 
 """ Tagbar
-nmap <C-d> :TagbarToggle<CR>
+nnoremap <Leader>d :TagbarToggle<CR>
 let g:tagbar_foldlevel = 0 
 
 """ virtual env
