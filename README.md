@@ -1,0 +1,2 @@
+# dotfiles
+Mostly emacs setup
