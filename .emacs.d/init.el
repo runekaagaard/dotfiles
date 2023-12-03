@@ -22,6 +22,7 @@
   revert-without-query '(".*")    ; Auto-reverts files without asking.
   confirm-kill-emacs nil          ; Don't nag about unsaved files
   vc-follow-symlinks t            ; just follow the god dam symlink, man
+  compilation-ask-about-save nil
 )
 
 (add-to-list 'default-frame-alist '(fullscreen . maximized)) ;; start in fullscreen
@@ -112,13 +113,15 @@
 (use-package dumb-jump)
 (use-package diminish)
 (use-package multiple-cursors)
-(use-package whole-line-or-region :config (whole-line-or-region-global-mode t))
 (use-package cython-mode)
 (use-package lua-mode)
 (use-package pdf-tools)
 (use-package nim-mode)
 (use-package try)
 (use-package smartparens)
+(use-package vterm :init (setq vterm-use-vterm-prompt nil))
+(use-package whole-line-or-region :config (whole-line-or-region-global-mode t))
+(use-package exec-path-from-shell :config (exec-path-from-shell-initialize))
 
 ;;; Looks ;;;
 ;; Monokai
@@ -189,6 +192,12 @@ under the project root directory."
   :ensure t
   :config
   (pyvenv-activate "/home/r/.bender_venvs/sag"))
+;;; END python
+
+;; nim
+(setq nim-compile-default-command
+  '("r" "--verbosity:0" "--hint[Processing]:off" "--excessiveStackTrace:on"))
+
 
 ;; Hippie expand.
 (setq hippie-expand-try-functions-list '(try-expand-dabbrev try-expand-dabbrev-all-buffers try-expand-dabbrev-from-kill try-complete-file-name-partially try-complete-file-name try-expand-all-abbrevs try-expand-list try-expand-line))
@@ -375,6 +384,15 @@ under the project root directory."
 
 (add-hook 'after-change-major-mode-hook 'my-disable-modes-in-tramp)
 
+;; vterm
+(push (list "find-file-below"
+            (lambda (path)
+              (if-let* ((buf (find-file-noselect path))
+                        (window (display-buffer-below-selected buf nil)))
+                  (select-window window)
+                (message "Failed to open file: %s" path))))
+      vterm-eval-cmds)
+
 ;; scratch
 (setq initial-major-mode 'text-mode)
 (setq initial-scratch-message "")
@@ -448,8 +466,7 @@ t))
   ; Å
   ; ¨
   ; A
-  ; ("s-a" . vterm)
-  ("s-a" . rk-ansi-term-bash)
+  ("s-a" . vterm)
   ; S
   ; D
   ; F
