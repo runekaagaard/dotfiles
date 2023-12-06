@@ -14,7 +14,9 @@
 (defun basic-setup ()
   (local-set-key (kbd "<tab>") 'missing-indent)
   (local-set-key (kbd "<backtab>") 'missing-dedent)
-  (rk-lsp-bridge-init) ; ordering issues with lsp-bridge and binding RET with acm popup.
+  ; (rk-lsp-bridge-init) ; ordering issues with lsp-bridge and binding RET with acm popup.
+  (local-set-key (kbd "RET") 'rk-newline-and-indent-pairs)
+  (smartparens-mode 1)
 )
 
 (defun indent-4 ()
@@ -43,16 +45,6 @@
     (indent-4))))  ; Apply indent-4 for all other text and prog modes
 
 (add-hook 'after-change-major-mode-hook 'rk-indention-settings)
-
-(defun clear-selection2()
-  (interactive)
-  (deactivate-mark t)
-  
-)
-
-(
- 
- )
 
 (defun rk-newline-and-indent-pairs ()
   "Insert a new line and indent, then add closing pair on its own line and indent."

@@ -73,7 +73,7 @@
 (require 'bind-key)
 (require 'defuns) ; My custom functions
 (require 'read-buffer-or-recent) ; Adds recent history to c-o
-
+(require 'indention-setup) ; Custom indention code
 ;; melpa
 (require 'package)
 (add-to-list 'package-archives
@@ -110,7 +110,6 @@
 (use-package expand-region)
 (use-package iedit)
 (use-package ace-jump-mode)
-(use-package dumb-jump)
 (use-package diminish)
 (use-package multiple-cursors)
 (use-package cython-mode)
@@ -148,6 +147,13 @@ under the project root directory."
   :format "literal"
   :files "everything"
   :dir "project")
+
+(use-package ag
+  :init (setq
+     ag-group-matches nil
+     ag-reuse-buffers t
+  )
+)
 
 ;; Ag wgrep
 (use-package wgrep-ag
@@ -212,6 +218,12 @@ under the project root directory."
 ; Kill minibuffer when leaving by mouse click.
 (setq minibuffer-scroll-window nil)
 
+;; dumb-jump
+(use-package dumb-jump
+  :config
+  (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
+  )
+
 ;;; lsp-bridge and dependencies. ;;;
 ;; pip install epc orjson sexpdata==1.0.0 six setuptools paramiko rapidfuzz
 (use-package yasnippet
@@ -223,11 +235,10 @@ under the project root directory."
 (use-package markdown-mode)
 
 (defun rk-lsp-bridge-init ()
-  (local-set-key (kbd "M-.") 'lsp-bridge-find-def)
-  (local-set-key (kbd "M-,") 'lsp-bridge-find-def-return)
-  (local-set-key (kbd "RET") 'rk-newline-and-indent-pairs)
-  (smartparens-mode 1)
-  (lsp-bridge-mode 1)
+  ;; (local-set-key (kbd "M-.") 'lsp-bridge-find-def)
+  ;; (local-set-key (kbd "M-,") 'lsp-bridge-find-def-return)
+  
+  ; (lsp-bridge-mode 1)
 )
 
 (use-package lsp-bridge
@@ -235,15 +246,22 @@ under the project root directory."
             :files (:defaults "*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
             :build (:not compile))
   :config
-  :init
+  (global-set-key (kbd "M-.") 'lsp-bridge-find-def)
+  (global-set-key (kbd "s-.") 'lsp-bridge-find-def-other-window)
+  (global-set-key (kbd "M-,") 'lsp-bridge-find-def-return)
   (setq 
     lsp-bridge-enable-search-words nil
-    lsp-bridge-enable-hover-diagnostic t
-    lsp-bridge-enable-mode-line nil
     acm-backend-search-file-words-max-number 0
+    lsp-bridge-enable-hover-diagnostic t
+    acm-backend-lsp-match-mode "prefixCaseSensitive"
+    ;; lsp-bridge-enable-mode-line nil
+    ;; lsp-bridge-enable-log t
+    ;; lsp-bridge-enable-debug t
   )
+  :init
   ;; Due to bugs in lsp-bridge when a hook binds to RET it's started in indention-setup.
-  (require 'indention-setup) 
+  ; 
+  (global-lsp-bridge-mode)
 )
 
 ;;; END lsp-bridge ;;;
@@ -276,7 +294,10 @@ under the project root directory."
 ;; Recentfiles.
 (require 'recentf)
 (recentf-mode 1)
-(setq recentf-max-menu-items 1000)
+(setq
+  recentf-max-menu-items 1000
+  recentf-max-saved-items 1000
+  recentf-auto-cleanup 'never)
 
 ;; History.
 (setq savehist-file "~/.emacs.d/savehist"
@@ -414,6 +435,14 @@ t))
 (modify-syntax-entry ?_ "_" rst-mode-syntax-table)
 (add-hook 'rst-mode-hook #'visual-line-mode)
 
+;; syntax table
+(defun rk-great-syntax-table ()
+  (modify-syntax-entry ?- "w")
+  (modify-syntax-entry ?_ "w"))
+
+(add-hook 'after-change-major-mode-hook 'rk-great-syntax-table)
+
+
 ;; Keyboard commands
 ;; Keybindings.
 ; C=ctrl, M=alt, s=super, h=hyper
@@ -461,16 +490,18 @@ t))
   ; O
   ("M-o" .  other-window) 
   ("C-o" .  find-file) 
-  ("s-M-o" .  recentf-open-files) 
+  ("s-M-o" .  recentf-open-files)
   ; P
   ; Å
   ; ¨
   ; A
-  ("s-a" . vterm)
+  ("s-a" . vterm) 
   ; S
   ; D
   ; F
-  ("s-s" .  rk-dwim-project-dir)
+  ; ("s-s" .  rk-dwim-project-dir)
+  ("s-s" .  ag-project)
+  ("s-M-s" . ag)
   ; G
   ; H
   ("s-M-h" .  highlight-symbol-at-point)
@@ -570,4 +601,5 @@ t))
 (diminish 'python-mode)
 (diminish 'abbrev-mode)
 (diminish 'format-all-mode)
-(diminish 'lsp-bridge-mode)
+; (diminish 'lsp-bridge-mode)
+(diminish 'smartparens-mode)
