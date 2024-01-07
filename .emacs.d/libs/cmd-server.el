@@ -12,6 +12,7 @@
       (make-network-process :name "cmd-server" :buffer "*cmd-server*" :family 'ipv4 :service cmd-server-port :sentinel 'cmd-server-sentinel :filter 'cmd-server-filter :server 't) 
       (setq cmd-server-clients '())
       )
+    (cmd-server-log "Started cmd-server")
     )
   
 (defun cmd-server-stop nil
@@ -21,9 +22,12 @@
     (delete-process (car (car cmd-server-clients)))
     (setq cmd-server-clients (cdr cmd-server-clients)))
   (delete-process "cmd-server")
+  (cmd-server-log "Stopped cmd-server")
   )
 
-(defun cmd-server-filter (proc string)   
+
+(defun cmd-server-filter (proc string)
+  (cmd-server-log (concat "Received: " string))
   (let ((pending (assoc proc cmd-server-clients))
       message
       index)

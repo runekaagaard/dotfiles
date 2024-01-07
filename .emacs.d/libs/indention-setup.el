@@ -11,6 +11,8 @@
   (setq yaml-indent-offset n)
 )
 
+(use-package smartparens) ; required for indentation setup.
+
 (defun basic-setup ()
   (local-set-key (kbd "<tab>") 'missing-indent)
   (local-set-key (kbd "<backtab>") 'missing-dedent)

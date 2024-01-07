@@ -13,6 +13,7 @@
   byte-compile-warnings '(not obsolete) ; Ignores warnings about obsolete features.
   window-safe-min-height 0        ; Allows very small window heights.
   window-min-height 0             ; Permits zero line window height.
+  column-number-mode t            ; column numbers in mode line
   ; disable noob prompts
   confirm-kill-processes nil      ; No confirmation for killing processes on exit.
   use-short-answers t             ; Enables 'y'/'n' instead of 'yes'/'no'.
@@ -25,12 +26,13 @@
   compilation-ask-about-save nil
 )
 
-(add-to-list 'default-frame-alist '(fullscreen . maximized)) ;; start in fullscreen
+; (add-to-list 'default-frame-alist '(fullscreen . maximized)) ;; start in fullscreen
 ; Quit means quit.
-(defadvice save-buffers-kill-emacs (around no-y-or-n activate)
-  (flet ((yes-or-no-p (&rest args) t)
-         (y-or-n-p (&rest args) t))
-    ad-do-it))
+; TODO: This crashes killing emacs. Why?
+;; (defadvice save-buffers-kill-emacs (around no-y-or-n activate)
+;;   (flet ((yes-or-no-p (&rest args) t)
+;;          (y-or-n-p (&rest args) t))
+;;     ad-do-it))
 
 ; Global modes on/off
 (scroll-bar-mode -1)              ; Disable the scroll bar
@@ -74,6 +76,9 @@
 (require 'defuns) ; My custom functions
 (require 'read-buffer-or-recent) ; Adds recent history to c-o
 (require 'indention-setup) ; Custom indention code
+(require 'secrets) ; Custom indention code
+(require 'ai) ; Chatgpt, etc.
+
 ;; melpa
 (require 'package)
 (add-to-list 'package-archives
@@ -117,7 +122,6 @@
 (use-package pdf-tools)
 (use-package nim-mode)
 (use-package try)
-(use-package smartparens)
 (use-package vterm :init (setq vterm-use-vterm-prompt nil))
 (use-package whole-line-or-region :config (whole-line-or-region-global-mode t))
 (use-package exec-path-from-shell :config (exec-path-from-shell-initialize))
@@ -132,22 +136,10 @@
 (set-face-attribute 'default nil :height 120)
 
 (use-package auto-dim-other-buffers)
+;;; END looks ;;;
 
-;;; 
-;; Ripgrep
-; Sudo apt install ripgrep
-(use-package rg
-  :config
-  (setq rg-command-line-flags '("-M" "80"))
-)
-(rg-define-search rk-dwim-project-dir
-  "Search for thing at point in files matching the current file
-under the project root directory."
-  :query ask
-  :format "literal"
-  :files "everything"
-  :dir "project")
-
+;;; Searching ;;;
+;; ag
 (use-package ag
   :init (setq
      ag-group-matches nil
@@ -163,6 +155,7 @@ under the project root directory."
   (autoload 'wgrep-ag-setup "wgrep-ag")
   (add-hook 'ag-mode-hook 'wgrep-ag-setup)
 )
+;;; END searching ;;;
 
 ;;; BEGIN completion ;;;
 (fido-mode 1) ; the vanilla successor of ido-mode, flex, smex, ido-everywhere+, etc. etc
@@ -204,7 +197,6 @@ under the project root directory."
 (setq nim-compile-default-command
   '("r" "--verbosity:0" "--hint[Processing]:off" "--excessiveStackTrace:on"))
 
-
 ;; Hippie expand.
 (setq hippie-expand-try-functions-list '(try-expand-dabbrev try-expand-dabbrev-all-buffers try-expand-dabbrev-from-kill try-complete-file-name-partially try-complete-file-name try-expand-all-abbrevs try-expand-list try-expand-line))
 
@@ -232,14 +224,16 @@ under the project root directory."
   :config
   (yas-global-mode 1))
 
-(use-package markdown-mode)
-
-(defun rk-lsp-bridge-init ()
-  ;; (local-set-key (kbd "M-.") 'lsp-bridge-find-def)
-  ;; (local-set-key (kbd "M-,") 'lsp-bridge-find-def-return)
-  
-  ; (lsp-bridge-mode 1)
-)
+(use-package markdown-mode
+  :init
+  (setq markdown-fontify-code-blocks-natively t)
+  :config
+  (set-face-attribute 'markdown-header-face-1 nil :weight 'normal :height 1.0)
+  (set-face-attribute 'markdown-header-face-2 nil :weight 'normal :height 1.0)
+  (set-face-attribute 'markdown-header-face-3 nil :weight 'normal :height 1.0)
+  (set-face-attribute 'markdown-header-face-4 nil :weight 'normal :height 1.0)
+  (set-face-attribute 'markdown-header-face-5 nil :weight 'normal :height 1.0)
+  (set-face-attribute 'markdown-header-face-6 nil :weight 'normal :height 1.0))
 
 (use-package lsp-bridge
   :straight '(lsp-bridge :type git :host github :repo "manateelazycat/lsp-bridge"
@@ -251,22 +245,37 @@ under the project root directory."
   (global-set-key (kbd "M-,") 'lsp-bridge-find-def-return)
   (setq 
     lsp-bridge-enable-search-words nil
-    acm-backend-search-file-words-max-number 0
     lsp-bridge-enable-hover-diagnostic t
+    lsp-bridge-enable-mode-line nil
+    ; lsp-bridge-complete-manually t
+    acm-backend-search-file-words-max-number 0
     acm-backend-lsp-match-mode "prefixCaseSensitive"
-    ;; lsp-bridge-enable-mode-line nil
-    ;; lsp-bridge-enable-log t
-    ;; lsp-bridge-enable-debug t
+    acm-enable-copilot t
   )
   :init
-  ;; Due to bugs in lsp-bridge when a hook binds to RET it's started in indention-setup.
-  ; 
   (global-lsp-bridge-mode)
 )
-
 ;;; END lsp-bridge ;;;
 
-;;; web ;;;
+; chatgpt, etc.
+; see secrets.el
+
+;; (require 'org)
+;; (setq gptel-default-mode 'org-mode)
+(straight-use-package 'gptel)
+
+(use-package shell-maker
+  :straight (:host github :repo "xenodium/chatgpt-shell" :files ("shell-maker.el")))
+
+(use-package chatgpt-shell
+  :requires shell-maker
+  :straight (:host github :repo "xenodium/chatgpt-shell" :files ("chatgpt-shell.el")))
+
+(use-package dall-e-shell
+  :requires shell-maker
+  :straight (:host github :repo "xenodium/chatgpt-shell" :files ("dall-e-shell.el")))
+
+;; web-mode ;;
 (use-package web-mode
   :init
   (setq
@@ -300,16 +309,18 @@ under the project root directory."
   recentf-auto-cleanup 'never)
 
 ;; History.
-(setq savehist-file "~/.emacs.d/savehist"
-      history-length 1000
-      savehist-additional-variables '(kill-ring mark-ring global-mark-ring search-ring regexp-search-ring extended-command-history)
-      savehist-autosave-interval 60)
+(setq
+ savehist-file "~/.emacs.d/savehist"
+ history-length 1000
+ savehist-additional-variables
+  '(kill-ring mark-ring global-mark-ring search-ring regexp-search-ring extended-command-history)
+ savehist-autosave-interval 60)
+
 (savehist-mode +1)
 
 ;; Bookmarks.
 (setq bookmark-save-flag 1)
 (setq bookmark-default-file "~/.emacs.d/bookmarks")
-
 ;;; END save state ;;;
 
 ;; Dired
@@ -332,9 +343,9 @@ under the project root directory."
 
 ;; Allow external programs to open files in emacs
 (require 'cmd-server)
-(ignore-errors
+;(ignore-errors
   (cmd-server-start)
-)
+;)
 
 ;;; org-mode ;;;
 (setq org-support-shift-select 1)
@@ -363,6 +374,7 @@ under the project root directory."
        ;(flyspell-mode 1)
        ;(org-reveal)
       (define-key org-mode-map (kbd "<s-tab>") 'org-cycle)
+      (define-key org-mode-map (kbd "<s-iso-lefttab>") 'org-shifttab)
       (define-key org-mode-map (kbd "<return>") 'newline)
       (define-key org-mode-map (kbd "<S-iso-lefttab>") nil)
       (define-key org-mode-map (kbd "<S-iso-lefttab>") 'missing-dedent)
@@ -392,7 +404,6 @@ under the project root directory."
 
 ;; org-reveal
 (setq org-reveal-root "file:///home/r/ws/reveal.js")
-
 ;;; END org-mode ;;;
 
 ;; tramp-mode
@@ -457,7 +468,7 @@ t))
 
 (bind-keys*
   ; $ or ½
-  ("½" . ace-jump-1) 
+  ("½" . ace-jump-mode) 
   ; mode
   ; 2
   ; 3
@@ -474,6 +485,7 @@ t))
   ; +
   ; ´
   ; Q
+  ("s-q" . rk-chatgpt-shell)
   ; W
   ("s-w" .  kill-this-buffer) 
   ; E
@@ -529,6 +541,7 @@ t))
   ("C-S-z" .  undo-fu-only-redo)
   ("M-z" . zap-up-to-char)
   ("s-M-z" . rk-zap-up-to-char-reverse)
+  ("s-z" . rk-gptel-rewrite-and-replace)
   ; X
   ; C
   ("s-c" . rk-open-file-in-clipboard)
@@ -601,5 +614,5 @@ t))
 (diminish 'python-mode)
 (diminish 'abbrev-mode)
 (diminish 'format-all-mode)
-; (diminish 'lsp-bridge-mode)
+(diminish 'lsp-bridge-mode)
 (diminish 'smartparens-mode)
