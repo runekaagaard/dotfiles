@@ -31,9 +31,12 @@
              "\n" (concat "\n" indentation) s nil t))))
 
 (defun rk-language ()
-  (if (string-suffix-p "-mode" (symbol-name major-mode))
-      (string-remove-suffix "-mode" (symbol-name major-mode))
-    (symbol-name major-mode)))
+  (cond ((eq major-mode 'web-mode)
+         (let ((ext (file-name-extension (buffer-file-name))))
+           (if (equal ext "js")
+               "javascript"
+             ext)))
+        (t (string-remove-suffix "-mode" (symbol-name major-mode)))))
 
 (defun rk-gptel-rewrite-and-replace (bounds &optional directive)
   (interactive
