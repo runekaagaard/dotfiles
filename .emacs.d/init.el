@@ -9,6 +9,7 @@
   case-replace t                  ; Respects case in search-and-replace operations.
   save-interprogram-paste-before-kill t ; Saves clipboard text before killing.
   yank-pop-change-selection t     ; Allows yank-pop to change the X11 clipboard.
+  mouse-yank-at-point t           ; Middle click pastes at point, not at click.
   ring-bell-function 'ignore      ; Disables the audible bell.
   byte-compile-warnings '(not obsolete) ; Ignores warnings about obsolete features.
   window-safe-min-height 0        ; Allows very small window heights.
@@ -77,7 +78,6 @@
 (require 'read-buffer-or-recent) ; Adds recent history to c-o
 (require 'indention-setup) ; Custom indention code
 (require 'secrets) ; Custom indention code
-(require 'ai) ; Chatgpt, etc.
 
 ;; melpa
 (require 'package)
@@ -125,6 +125,46 @@
 (use-package vterm :init (setq vterm-use-vterm-prompt nil))
 (use-package whole-line-or-region :config (whole-line-or-region-global-mode t))
 (use-package exec-path-from-shell :config (exec-path-from-shell-initialize))
+
+;; chatgpt, etc.
+; see secrets.el
+(straight-use-package 'gptel)
+(require 'ai) ; Chatgpt, etc.
+
+(use-package shell-maker
+  :straight (:host github :repo "xenodium/chatgpt-shell" :files ("shell-maker.el")))
+
+(use-package chatgpt-shell
+  :requires shell-maker
+  :straight (:host github :repo "xenodium/chatgpt-shell" :files ("chatgpt-shell.el")))
+
+(setq chatgpt-shell-system-prompt 2) ; Programming
+
+; todo: broken.
+;; (use-package dall-e-shell
+;;   :requires shell-maker
+;;   :straight (:host github :repo "xenodium/chatgpt-shell" :files ("dall-e-shell.el")))
+
+;; devdocs
+(use-package devdocs)
+(custom-set-faces
+ '(shr-text ((t :height 1.0)))
+ '(shr-h1 ((t :height 1.0 :weight bold :underline t)))
+ '(shr-h2 ((t :height 1.0 :weight bold :underline t)))
+ '(shr-h3 ((t :height 1.0 :weight bold)))
+ '(shr-h4 ((t :height 1.0 :weight bold)))
+ '(shr-h5 ((t :height 1.0 :weight bold)))
+ '(devdocs-code-block ((t :background "#2e302e" :extend t)))
+)
+
+;; which-key
+(use-package which-key
+  :config
+  (which-key-setup-side-window-right)
+  (setq which-key-side-window-max-width 0.4)
+  ; (which-key-mode 1)
+  
+  )
 
 ;;; Looks ;;;
 ;; Monokai
@@ -235,45 +275,46 @@
   (set-face-attribute 'markdown-header-face-5 nil :weight 'normal :height 1.0)
   (set-face-attribute 'markdown-header-face-6 nil :weight 'normal :height 1.0))
 
-(use-package lsp-bridge
-  :straight '(lsp-bridge :type git :host github :repo "manateelazycat/lsp-bridge"
-            :files (:defaults "*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
-            :build (:not compile))
-  :config
-  (global-set-key (kbd "M-.") 'lsp-bridge-find-def)
-  (global-set-key (kbd "s-.") 'lsp-bridge-find-def-other-window)
-  (global-set-key (kbd "M-,") 'lsp-bridge-find-def-return)
-  (setq 
-    lsp-bridge-enable-search-words nil
-    lsp-bridge-enable-hover-diagnostic t
-    lsp-bridge-enable-mode-line nil
-    ; lsp-bridge-complete-manually t
-    acm-backend-search-file-words-max-number 0
-    acm-backend-lsp-match-mode "prefixCaseSensitive"
-    acm-enable-copilot t
-  )
-  :init
-  (global-lsp-bridge-mode)
+;; (use-package lsp-bridge
+;;   :straight '(lsp-bridge :type git :host github :repo "manateelazycat/lsp-bridge"
+;;             :files (:defaults "*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
+;;             :build (:not compile))
+;;   :config
+;;   (global-set-key (kbd "M-.") 'lsp-bridge-find-def)
+;;   (global-set-key (kbd "s-.") 'lsp-bridge-find-def-other-window)
+;;   (global-set-key (kbd "M-,") 'lsp-bridge-find-def-return)
+;;   (setq 
+;;     lsp-bridge-enable-search-words nil
+;;     lsp-bridge-enable-hover-diagnostic t
+;;     lsp-bridge-enable-mode-line nil
+;;     ; lsp-bridge-complete-manually t
+;;     acm-backend-search-file-words-max-number 0
+;;     acm-backend-lsp-match-mode "prefixCaseSensitive"
+;;     acm-enable-copilot t
+;;   )
+;;   :init
+;;   (global-lsp-bridge-mode)
+;; )
+
+(add-to-list 'load-path "/home/r/ws/lsp-bridge")
+(require 'lsp-bridge)
+(defun lsp-bridge--mode-line-format () "")
+(global-set-key (kbd "M-.") 'lsp-bridge-find-def)
+(global-set-key (kbd "s-.") 'lsp-bridge-find-def-other-window)
+(global-set-key (kbd "M-,") 'lsp-bridge-find-def-return)
+(setq 
+  lsp-bridge-enable-search-words nil
+  lsp-bridge-enable-hover-diagnostic t
+  
+  ; lsp-bridge-enable-mode-line nil
+  acm-backend-search-file-words-max-number 0
+  acm-backend-lsp-match-mode "prefixCaseSensitive"
+  
+  acm-enable-copilot t
 )
+(global-lsp-bridge-mode)
+
 ;;; END lsp-bridge ;;;
-
-; chatgpt, etc.
-; see secrets.el
-
-;; (require 'org)
-;; (setq gptel-default-mode 'org-mode)
-(straight-use-package 'gptel)
-
-(use-package shell-maker
-  :straight (:host github :repo "xenodium/chatgpt-shell" :files ("shell-maker.el")))
-
-(use-package chatgpt-shell
-  :requires shell-maker
-  :straight (:host github :repo "xenodium/chatgpt-shell" :files ("chatgpt-shell.el")))
-
-(use-package dall-e-shell
-  :requires shell-maker
-  :straight (:host github :repo "xenodium/chatgpt-shell" :files ("dall-e-shell.el")))
 
 ;; web-mode ;;
 (use-package web-mode
@@ -577,6 +618,9 @@ t))
   ("<C-M-drag-mouse-1>" . rk-swap-window-buffers-by-dnd)
 )
 
+;; Don't conflict with rk-swap-window-buffers-by-dnd
+(global-unset-key (kbd "C-M-<down-mouse-1>"))
+
 ;; Frame title
 (setq frame-title-format "love")
 
@@ -614,5 +658,26 @@ t))
 (diminish 'python-mode)
 (diminish 'abbrev-mode)
 (diminish 'format-all-mode)
-(diminish 'lsp-bridge-mode)
+;(diminish 'lsp-bridge-mode)
 (diminish 'smartparens-mode)
+(diminish 'which-key-mode)
+
+; the format
+(defun my-mode-line-format (modes)
+  "Return a string representation of the `modes' without surrounding brackets or parentheses."
+  (let ((clean-modes (format-mode-line modes)))
+    (setq clean-modes (replace-regexp-in-string (regexp-quote "[") "" clean-modes))
+    (setq clean-modes (replace-regexp-in-string (regexp-quote "]") "" clean-modes))
+    (replace-regexp-in-string (regexp-quote "(") ""
+      (replace-regexp-in-string (regexp-quote ")") "" clean-modes))))
+
+(setq-default mode-line-format
+  '("%e" mode-line-front-space
+    mode-line-frame-identification mode-line-buffer-identification 
+    (vc-mode vc-mode)
+    "  " (:eval (my-mode-line-format mode-line-modes))
+    mode-line-misc-info mode-line-end-spaces
+    (:eval (propertize " " 'display `((space :align-to (- right ,(length (format-mode-line "%l,%c  ")))))))
+    "%l,%c"
+   )
+)

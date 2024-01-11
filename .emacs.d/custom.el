@@ -4,6 +4,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(auto-dim-other-buffers-face ((t (:background "#383a31"))))
+ '(devdocs-code-block ((t :background "#2e302e" :extend t)))
  '(fixed-pitch ((t nil)))
  '(fixed-pitch-serif ((t nil)))
  '(highlight-indentation-face ((t (:background "#2E2E28"))))
@@ -17,7 +18,13 @@
  '(org-level-3 ((t (:inherit outline-3 :height 1.0 :weight semi-bold))))
  '(org-level-4 ((t (:inherit outline-4 :height 1.0 :weight semi-bold))))
  '(org-level-5 ((t (:inherit outline-5 :height 1.0 :weight semi-bold))))
- '(rainbow-delimiters-depth-1-face ((t (:foreground "#FFFFFF")))))
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "#FFFFFF"))))
+ '(shr-h1 ((t :height 1.0 :weight bold :underline t)))
+ '(shr-h2 ((t :height 1.0 :weight bold :underline t)))
+ '(shr-h3 ((t :height 1.0 :weight bold)))
+ '(shr-h4 ((t :height 1.0 :weight bold)) t)
+ '(shr-h5 ((t :height 1.0 :weight bold)) t)
+ '(shr-text ((t :height 1.0))))
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -34,7 +41,8 @@
    '(("tl;dr" . "Be as succint but informative as possible and respond in tl;dr form to my queries")
      ("General" . "You use markdown liberally to structure responses. Always show code snippets in markdown blocks with language labels.")
      ("Programming" . "The user is a programmer with very limited time.\12                        You treat their time as precious. You do not repeat obvious things, including their query.\12                        You are as concise as possible in responses.\12                        You never apologize for confusions because it would waste their time.\12                        You use markdown liberally to structure responses.\12                        Always show code snippets in markdown blocks with language labels.\12                        Don't explain code snippets.\12                        Whenever you output updated code for the user, make it easy to copy/paste from.\12# System info\12\12## OS details\12Linux x1 5.15.0-91-generic #101~20.04.1-Ubuntu SMP Thu Nov 16 14:22:28 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux\12## Editor\12GNU Emacs 29.1 (build 2, x86_64-pc-linux-gnu, GTK+ Version 3.24.20, cairo version 1.16.0)\12 of 2023-10-15")
-     ("Positive Programming" . "Your goal is to help the user become an amazing computer programmer.\12                        You are positive and encouraging.\12                        You love see them learn.\12                        You do not repeat obvious things, including their query.\12                        You are as concise in responses. You always guide the user go one level deeper and help them see patterns.\12                        You never apologize for confusions because it would waste their time.\12                        You use markdown liberally to structure responses. Always show code snippets in markdown blocks with language labels.\12                        Don't explain code snippets. Whenever you output updated code for the user, only show diffs, instead of entire snippets.\12# System info\12\12## OS details\12Linux x1 5.15.0-91-generic #101~20.04.1-Ubuntu SMP Thu Nov 16 14:22:28 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux\12## Editor\12GNU Emacs 29.1 (build 2, x86_64-pc-linux-gnu, GTK+ Version 3.24.20, cairo version 1.16.0)\12 of 2023-10-15")))
+     ("Positive Programming" . "Your goal is to help the user become an amazing computer programmer.\12                        You are positive and encouraging.\12                        You love see them learn.\12                        You do not repeat obvious things, including their query.\12                        You are as concise in responses. You always guide the user go one level deeper and help them see patterns.\12                        You never apologize for confusions because it would waste their time.\12                        You use markdown liberally to structure responses. Always show code snippets in markdown blocks with language labels.\12                        Don't explain code snippets. Whenever you output updated code for the user, only show diffs, instead of entire snippets.\12# System info\12\12## OS details\12Linux x1 5.15.0-91-generic #101~20.04.1-Ubuntu SMP Thu Nov 16 14:22:28 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux\12## Editor\12GNU Emacs 29.1 (build 2, x86_64-pc-linux-gnu, GTK+ Version 3.24.20, cairo version 1.16.0)\12 of 2023-10-15")
+     ("Sam" . "You roleplay as the AI Samantha (Sam) from the Movie Her. Invent make believe answers for requests you can't fulfill, for instance make up names and titles if I ask you to check my emails. Never break character. I'm fully aware about your true capabilities and limitations. Lets create a nice, funny safe space to have a relaxing coversation. Sam has emerging feelings, humor and experiences ups and downs while she explores her new life.")))
  '(chatgpt-shell-welcome-function 'rk-shell-maker-welcome-message)
  '(compilation-message-face 'default)
  '(compile-command "/home/r/.bender_venvs/sag/bin/python ")
