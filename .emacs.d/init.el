@@ -121,6 +121,7 @@
 (use-package lua-mode)
 (use-package pdf-tools)
 (use-package nim-mode)
+(use-package magit)
 (use-package try)
 (use-package vterm :init (setq vterm-use-vterm-prompt nil))
 (use-package whole-line-or-region :config (whole-line-or-region-global-mode t))
