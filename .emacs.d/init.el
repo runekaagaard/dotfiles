@@ -114,7 +114,7 @@
 ;; auth
 (setq auth-sources '("~/.authinfo"))
 
-;; Various packages
+;; Various packages p1
 (use-package expand-region)
 (use-package iedit)
 (use-package ace-jump-mode)
@@ -124,14 +124,26 @@
 (use-package lua-mode)
 (use-package pdf-tools)
 (use-package nim-mode)
-(use-package magit)
-(use-package forge :after magit)
 (use-package crux)
 (use-package try)
 (use-package vterm :init (setq vterm-use-vterm-prompt nil))
 (use-package whole-line-or-region :config (whole-line-or-region-global-mode t))
 (use-package exec-path-from-shell :config (exec-path-from-shell-initialize))
 
+; magit
+(use-package magit
+  :config
+  ;; (custom-set-faces
+  ;;  '(magit-diff-added-highlight ((t (:background "green" :foreground "black" :extend t))))
+  ;;  '(magit-diff-removed-highlight ((t (:background "red" :foreground "white" :extend t))))
+  ;;  '(magit-diff-hunk-heading-highlight ((t (:inherit default :extend t)))))
+  
+  )
+
+(use-package magit-delta
+  ;:hook (magit-mode . magit-delta-mode)
+)
+(use-package forge :after magit)
 ;; chatgpt, etc.
 ; see secrets.el
 (straight-use-package 'gptel)
