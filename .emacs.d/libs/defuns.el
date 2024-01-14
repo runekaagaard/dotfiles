@@ -21,6 +21,12 @@
 ;;   ))
 ;; )
 
+(defun rk-replace-multiple (replacements string)
+  "Replace multiple substrings in `string` according to `replacements`."
+  (dolist (replace replacements string)
+    (setq string (replace-regexp-in-string (car replace) (cdr replace) string t t)))
+  string)
+
 ;; source: http://steve.yegge.googlepages.com/my-dot-emacs-file
 (defun rk-rename-file-and-buffer (new-name)
   "Renames both current buffer and file it's visiting to NEW-NAME."

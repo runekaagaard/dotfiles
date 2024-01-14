@@ -669,12 +669,13 @@ t))
 
 ; the format
 (defun my-mode-line-format (modes)
-  "Return a string representation of the `modes' without surrounding brackets or parentheses."
-  (let ((clean-modes (format-mode-line modes)))
-    (setq clean-modes (replace-regexp-in-string (regexp-quote "[") "" clean-modes))
-    (setq clean-modes (replace-regexp-in-string (regexp-quote "]") "" clean-modes))
-    (replace-regexp-in-string (regexp-quote "(") ""
-      (replace-regexp-in-string (regexp-quote ")") "" clean-modes))))
+  "Return a string representation of `modes` post replacements."
+  (let ((replacements '(("LSPB" . "l")
+                        ("\\[" . "")
+                        ("\\]" . "")
+                        ("(" . "")
+                        (")" . ""))))
+    (rk-replace-multiple replacements (format-mode-line modes))))
 
 (setq-default mode-line-format
   '("%e" mode-line-front-space
