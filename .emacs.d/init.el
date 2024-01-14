@@ -483,6 +483,16 @@
                 (message "Failed to open file: %s" path))))
       vterm-eval-cmds)
 
+(defun rk-vterm-copy-mode-toggle ()
+  "Toggle vterm between normal and copy mode."
+  (interactive)
+  (if (not vterm-copy-mode)
+      (vterm-copy-mode 1)
+    (vterm-copy-mode -1)))
+
+(define-key vterm-mode-map (kbd "s-c") 'rk-vterm-copy-mode-toggle)
+(define-key vterm-copy-mode-map (kbd "s-c") 'rk-vterm-copy-mode-toggle)
+
 ;; scratch
 (setq initial-major-mode 'text-mode)
 (setq initial-scratch-message "")
@@ -552,6 +562,7 @@ t))
   ; R
   ("s-r" . recompile) 
   ; T
+  ("s-t" . magit-status)
   ("C-t" . rk-transpose-sexps)
   ; Y
   ; U
@@ -602,8 +613,8 @@ t))
   ("s-z" . rk-gptel-rewrite-and-replace)
   ; X
   ; C
-  ("s-c" . rk-open-file-in-clipboard)
-  ("s-x" . rk-open-file-in-primary)
+  ; ("s-c" . rk-open-file-in-clipboard)
+  ; ("s-x" . rk-open-file-in-primary)
   ; V
   ; B
   ("s-b" .  switch-to-buffer)
@@ -630,7 +641,7 @@ t))
   ("M-<left>" . (lambda () (interactive) (if (derived-mode-p 'org-mode) (org-metaleft) (call-interactively #'rk--move-beginning-of-line))))
   ("M-<right>" . (lambda () (interactive) (if (derived-mode-p 'org-mode) (org-metaright) (call-interactively #'move-end-of-line))))
   ; TAB
-  ("C-<tab>" . rk-indent-according-to-mode)
+  ;("C-<tab>" . rk-indent-according-to-mode);
   ; Mouse heresy
   ("<C-M-drag-mouse-1>" . rk-swap-window-buffers-by-dnd)
 )
