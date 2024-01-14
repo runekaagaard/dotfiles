@@ -111,6 +111,9 @@
   use-package-always-ensure t
 )
 
+;; auth
+(setq auth-sources '("~/.authinfo"))
+
 ;; Various packages
 (use-package expand-region)
 (use-package iedit)
@@ -122,6 +125,8 @@
 (use-package pdf-tools)
 (use-package nim-mode)
 (use-package magit)
+(use-package forge :after magit)
+(use-package crux)
 (use-package try)
 (use-package vterm :init (setq vterm-use-vterm-prompt nil))
 (use-package whole-line-or-region :config (whole-line-or-region-global-mode t))
@@ -306,7 +311,6 @@
 (setq 
   lsp-bridge-enable-search-words nil
   lsp-bridge-enable-hover-diagnostic t
-  
   ; lsp-bridge-enable-mode-line nil
   acm-backend-search-file-words-max-number 0
   acm-backend-lsp-match-mode "prefixCaseSensitive"
