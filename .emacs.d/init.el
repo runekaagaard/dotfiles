@@ -139,6 +139,19 @@
   ;;  '(magit-diff-hunk-heading-highlight ((t (:inherit default :extend t)))))
   
   )
+(require 'magit)
+(defun magit-stage-commit-push ()
+  (interactive)
+  (let ((magit-no-confirm '(stage-all-changes)))
+    (magit-stage-modified t))  ; Stage all unstaged changes without confirmation
+  (magit-stage-untracked t)    ; Stage all untracked files
+  (magit-commit-create)        ; Directly open commit message buffer
+  (magit-push-current-to-upstream nil))
+
+(with-eval-after-load 'magit
+  (transient-append-suffix 'magit-status-jump 'magit-jump-to-unpushed-to-upstream
+    '("x" "Stage, Commit & Push" magit-stage-commit-push)))
+
 
 (use-package magit-delta
   ;:hook (magit-mode . magit-delta-mode)
