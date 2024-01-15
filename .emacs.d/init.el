@@ -139,15 +139,25 @@
   ;;  '(magit-diff-hunk-heading-highlight ((t (:inherit default :extend t)))))
   
   )
+
+(defun rk-show-staged ()
+  (interactive)
+  (let ((staged-section (magit-get-section '((staged) (status)))))
+    (when staged-section
+      (magit-section-show staged-section)))
+  )
 (defun rk-magit-stage-commit-push ()
   (interactive)
   (magit-refresh)
   (let ((magit-no-confirm '(stage-all-changes)))
     (magit-stage-modified t)  ; Stage all unstaged changes without confirmation
     (magit-stage-untracked t) ; Stage all untracked files
-    (magit-refresh)
-    (let ((commit-message (read-string "Commit message: ")))
-      (magit-call-git "commit" "-m" commit-message)) ; Commit with message
+  )
+  (magit-refresh)
+  ;(magit-jump-to-staged)
+  (magit-diff-staged)
+  (let ((commit-message (read-string "Commit message: ")))
+    (magit-call-git "commit" "-m" commit-message) ; Commit with message
     (magit-push-current-to-upstream nil)) ; Push to upstream
   (magit-refresh))
 
@@ -155,7 +165,6 @@
   (interactive)
   (magit-status)
   (rk-magit-stage-commit-push))
-
 
 (define-key magit-mode-map (kbd "s-x") 'rk-magit-stage-commit-push)
 (global-set-key (kbd "s-x") 'rk-global-magit-stage-commit-push)
