@@ -146,8 +146,9 @@
         (commit-message (read-string "Commit message: ")))
     (magit-stage-modified t)  ; Stage all unstaged changes without confirmation
     (magit-stage-untracked t) ; Stage all untracked files
-    (magit-commit-create `("--message" ,commit-message)) ; Commit with message
-    (magit-push-current-to-upstream nil)))
+    (magit-call-git "commit" "-m" commit-message) ; Commit with message
+    (magit-refresh)                                ; Refresh Magit status buffer
+    (magit-push-current-to-upstream)))
 
 (with-eval-after-load 'magit
   (transient-append-suffix 'magit-status-jump 'magit-jump-to-unpushed-to-upstream
