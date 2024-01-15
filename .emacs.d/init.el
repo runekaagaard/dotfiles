@@ -155,6 +155,7 @@
   (magit-status)
   (rk-magit-stage-commit-push))
 
+
 (define-key magit-mode-map (kbd "s-x") 'rk-magit-stage-commit-push)
 (global-set-key (kbd "s-x") 'rk-global-magit-stage-commit-push)
 
