@@ -153,6 +153,7 @@
   (transient-append-suffix 'magit-status-jump 'magit-jump-to-unpushed-to-upstream
     '("x" "Stage, Commit & Push" magit-stage-commit-push)))
 
+
 (use-package magit-delta
   ;:hook (magit-mode . magit-delta-mode)
 )
