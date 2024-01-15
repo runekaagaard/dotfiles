@@ -142,13 +142,6 @@
 
 ;(magit-jump-to-staged)
 
-(defun rk-show-staged ()
-  (interactive)
-  (let ((staged-section (magit-get-section '((staged) (status)))))
-    (when staged-section
-      (magit-section-show staged-section)))
-  )
-
 (defun rk-magit-stage-commit-push ()
   (interactive)
   (magit-refresh)
