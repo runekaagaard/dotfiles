@@ -142,11 +142,12 @@
 (require 'magit)
 (defun magit-stage-commit-push ()
   (interactive)
-  (let ((magit-no-confirm '(stage-all-changes)))
-    (magit-stage-modified t))  ; Stage all unstaged changes without confirmation
-  (magit-stage-untracked t)    ; Stage all untracked files
-  (let ((magit-post-commit-hook #'magit-push-current-to-upstream))
-    (magit-commit-create)))    ; Directly open commit message buffer
+  (let ((magit-no-confirm '(stage-all-changes))
+        (commit-message (read-string "Commit message: ")))
+    (magit-stage-modified t)  ; Stage all unstaged changes without confirmation
+    (magit-stage-untracked t) ; Stage all untracked files
+    (magit-commit-create `("--message" ,commit-message)) ; Commit with message
+    (magit-push-current-to-upstream nil)))
 
 (with-eval-after-load 'magit
   (transient-append-suffix 'magit-status-jump 'magit-jump-to-unpushed-to-upstream
