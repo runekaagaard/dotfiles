@@ -145,14 +145,12 @@
   (let ((magit-no-confirm '(stage-all-changes)))
     (magit-stage-modified t))  ; Stage all unstaged changes without confirmation
   (magit-stage-untracked t)    ; Stage all untracked files
-  (magit-commit-create)        ; Directly open commit message buffer
-  (magit-push-current-to-upstream nil))
-
+  (let ((magit-post-commit-hook #'magit-push-current-to-upstream))
+    (magit-commit-create)))    ; Directly open commit message buffer
 
 (with-eval-after-load 'magit
   (transient-append-suffix 'magit-status-jump 'magit-jump-to-unpushed-to-upstream
     '("x" "Stage, Commit & Push" magit-stage-commit-push)))
-
 
 
 (use-package magit-delta
