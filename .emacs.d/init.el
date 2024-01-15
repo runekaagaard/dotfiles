@@ -140,12 +140,15 @@
   
   )
 
+;(magit-jump-to-staged)
+
 (defun rk-show-staged ()
   (interactive)
   (let ((staged-section (magit-get-section '((staged) (status)))))
     (when staged-section
       (magit-section-show staged-section)))
   )
+
 (defun rk-magit-stage-commit-push ()
   (interactive)
   (magit-refresh)
@@ -154,12 +157,15 @@
     (magit-stage-untracked t) ; Stage all untracked files
   )
   (magit-refresh)
-  ;(magit-jump-to-staged)
   (magit-diff-staged)
   (let ((commit-message (read-string "Commit message: ")))
     (magit-call-git "commit" "-m" commit-message) ; Commit with message
     (magit-push-current-to-upstream nil)) ; Push to upstream
-  (magit-refresh))
+  (magit-refresh)
+  (let ((buffers (buffer-list)))
+    (dolist (buffer buffers)
+      (when (string-prefix-p "magit-diff:" (buffer-name buffer))
+        (kill-buffer buffer)))))
 
 (defun rk-global-magit-stage-commit-push ()
   (interactive)
