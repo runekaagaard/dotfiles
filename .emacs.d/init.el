@@ -148,6 +148,7 @@
   (magit-commit-create)        ; Directly open commit message buffer
   (magit-push-current-to-upstream nil))
 
+
 (with-eval-after-load 'magit
   (transient-append-suffix 'magit-status-jump 'magit-jump-to-unpushed-to-upstream
     '("x" "Stage, Commit & Push" magit-stage-commit-push)))
