@@ -503,25 +503,6 @@
 
 (add-hook 'after-change-major-mode-hook 'my-disable-modes-in-tramp)
 
-;; vterm
-(push (list "find-file-below"
-            (lambda (path)
-              (if-let* ((buf (find-file-noselect path))
-                        (window (display-buffer-below-selected buf nil)))
-                  (select-window window)
-                (message "Failed to open file: %s" path))))
-      vterm-eval-cmds)
-
-(defun rk-vterm-copy-mode-toggle ()
-  "Toggle vterm between normal and copy mode."
-  (interactive)
-  (if (not vterm-copy-mode)
-      (vterm-copy-mode 1)
-    (vterm-copy-mode -1)))
-
-(define-key vterm-mode-map (kbd "s-c") 'rk-vterm-copy-mode-toggle)
-(define-key vterm-copy-mode-map (kbd "s-c") 'rk-vterm-copy-mode-toggle)
-
 ;; scratch
 (setq initial-major-mode 'text-mode)
 (setq initial-scratch-message "")
@@ -635,7 +616,11 @@ t))
   ("C-M-'" .  dumb-jump-go-prompt)
   ; >
   ; Z
-  ("C-z" .  undo-fu-only-undo)
+  ("C-z" . (lambda ()
+                       (interactive)
+                       (if (eq major-mode 'vterm-mode)
+                           (vterm-undo)
+                         (undo-fu-only-undo))))
   ("C-S-z" .  undo-fu-only-redo)
   ("M-z" . zap-up-to-char)
   ("s-M-z" . rk-zap-up-to-char-reverse)
@@ -677,6 +662,28 @@ t))
 
 ;; Don't conflict with rk-swap-window-buffers-by-dnd
 (global-unset-key (kbd "C-M-<down-mouse-1>"))
+
+;; vterm
+(push (list "find-file-below"
+            (lambda (path)
+              (if-let* ((buf (find-file-noselect path))
+                        (window (display-buffer-below-selected buf nil)))
+                  (select-window window)
+                (message "Failed to open file: %s" path))))
+      vterm-eval-cmds)
+
+(defun rk-vterm-copy-mode-toggle ()
+  "Toggle vterm between normal and copy mode."
+  (interactive)
+  (if (not vterm-copy-mode)
+      (vterm-copy-mode 1)
+    (vterm-copy-mode -1)))
+
+(define-key vterm-mode-map (kbd "s-c") 'rk-vterm-copy-mode-toggle)
+(define-key vterm-copy-mode-map (kbd "s-c") 'rk-vterm-copy-mode-toggle)
+(define-key vterm-mode-map (kbd "M-w") #'kill-ring-save)
+
+; (define-key vterm-mode-map (kbd "C-S-z") 'vterm-redo)
 
 ;; Frame title
 (setq frame-title-format "love")
