@@ -163,11 +163,31 @@
 (defun rk-global-magit-stage-commit-push ()
   (interactive)
   (save-window-excursion
+    (delete-other-windows)
     (magit-status)
     (rk-magit-stage-commit-push)))
 
 (define-key magit-mode-map (kbd "s-x") 'rk-magit-stage-commit-push)
 (global-set-key (kbd "s-x") 'rk-global-magit-stage-commit-push)
+
+(defun magit-diff-range-master ()
+  (interactive)
+  (magit-diff-range "master...HEAD"))
+
+(transient-append-suffix 'magit-diff "d"
+  '("m" "Diff against master" magit-diff-range-master))
+
+(defun my-magit-diff-upstream... (&optional args files)
+    (interactive (magit-diff-arguments))
+    (let ((merge-base (magit-git-string "merge-base" "@{u}" "HEAD")))
+      (if merge-base
+          (magit-diff-working-tree (magit-git-string "merge-base" "@{u}" "HEAD") args files)
+        (let ((upstream (magit-get-upstream-ref)))
+          (cond
+           ((null upstream) (error "Cannot determine merge base: upstream is not set"))
+           (t (error "Cannot determine merge base")))))))
+
+  (transient-append-suffix 'magit-diff "r" '("U" "Diff upstream...worktree" my-magit-diff-upstream...))
 
 (use-package magit-delta
   ;:hook (magit-mode . magit-delta-mode)
@@ -563,7 +583,7 @@ t))
   ; +
   ; ´
   ; Q
-  ("s-q" . rk-chatgpt-shell)
+  ("s-q" . (lambda () (interactive) (rk-toggle-or-run-mode 'chatgpt-shell 'chatgpt-shell-mode)))
   ; W
   ("s-w" .  kill-this-buffer) 
   ; E
@@ -586,7 +606,7 @@ t))
   ; Å
   ; ¨
   ; A
-  ("s-a" . vterm) 
+  ("s-a" . (lambda () (interactive) (rk-toggle-or-run-mode 'vterm 'vterm-mode)))
   ; S
   ; D
   ; F

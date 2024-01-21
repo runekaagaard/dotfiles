@@ -1,23 +1,23 @@
 ;;; chatgpt-shell ;;;
-(defun rk-chatgpt-shell ()
-  "Switch to a buffer starting with '*chatgpt*', or run 'chatgpt-shell' command if none found."
-  (interactive)
-  (let* ((chatgpt-buffer (catch 'found
-                            (dolist (buf (buffer-list))
-                              (when (string-prefix-p "*chatgpt*" (buffer-name buf))
-                                (throw 'found buf))))))
-    (if chatgpt-buffer
-        (if (eq (current-buffer) chatgpt-buffer)
-            ;; If the chatgpt buffer is the current buffer, switch to the previous one
-            (switch-to-buffer (other-buffer chatgpt-buffer t))
-          (let ((chatgpt-window (get-buffer-window chatgpt-buffer t)))
-            (if chatgpt-window
-                ;; If the chatgpt buffer is visible, switch to its window
-                (select-window chatgpt-window)
-              ;; If the chatgpt buffer exists but isn't visible, switch to it
-              (switch-to-buffer chatgpt-buffer))))
-      ;; If no chatgpt buffer is found, run chatgpt-shell
-      (chatgpt-shell))))
+;; (defun rk-chatgpt-shell ()
+;;   "Switch to a buffer starting with '*chatgpt*', or run 'chatgpt-shell' command if none found."
+;;   (interactive)
+;;   (let* ((chatgpt-buffer (catch 'found
+;;                             (dolist (buf (buffer-list))
+;;                               (when (string-prefix-p "*chatgpt*" (buffer-name buf))
+;;                                 (throw 'found buf))))))
+;;     (if chatgpt-buffer
+;;         (if (eq (current-buffer) chatgpt-buffer)
+;;             ;; If the chatgpt buffer is the current buffer, switch to the previous one
+;;             (switch-to-buffer (other-buffer chatgpt-buffer t))
+;;           (let ((chatgpt-window (get-buffer-window chatgpt-buffer t)))
+;;             (if chatgpt-window
+;;                 ;; If the chatgpt buffer is visible, switch to its window
+;;                 (select-window chatgpt-window)
+;;               ;; If the chatgpt buffer exists but isn't visible, switch to it
+;;               (switch-to-buffer chatgpt-buffer))))
+;;       ;; If no chatgpt buffer is found, run chatgpt-shell
+;;       (chatgpt-shell))))
 
 (defun rk-shell-maker-welcome-message (config) "")
 

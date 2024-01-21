@@ -533,4 +533,32 @@ it appears in the minibuffer prompt."
    "python3 -c 'import sys, sqlparse; print(sqlparse.format(sys.stdin.read(), reindent=True))'"
    t t))
 
+(defun rk-toggle-or-run-mode (open-command opened-mode)
+  "Toggle or run a specified mode. If the mode OPENED-MODE is not active, run OPEN-COMMAND to open it. If the mode is active, toggle its visibility or switch to the last buffer."
+  (let ((buffer (car (cl-remove-if-not (lambda (buf)
+                                         (with-current-buffer buf
+                                           (derived-mode-p opened-mode)))
+                                       (buffer-list)))))
+    (if buffer
+        (if (eq (current-buffer) buffer)
+            (switch-to-buffer (other-buffer buffer))
+          (let ((win (get-buffer-window buffer t)))
+            (if win
+                (select-window win)
+              (switch-to-buffer buffer))))
+      (call-interactively open-command))))
+
+(defun rk-bind-toggle-or-run-mode (open-command opened-mode)
+  "Bind a direct call to toggle OPENED-MODE or run OPEN-COMMAND."
+  (let ((fname (intern (concat "toggle-"
+                               (symbol-name open-command)
+                               "-"
+                               (symbol-name opened-mode)))))
+    (fset fname
+          `(lambda ()
+             (interactive)
+             (toggle-or-run-mode ',open-command ',opened-mode)))
+    fname))
+
+
 (provide 'defuns)

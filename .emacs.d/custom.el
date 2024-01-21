@@ -59,7 +59,7 @@
  '(elpy-test-runner 'elpy-test-django-runner)
  '(fci-rule-color "#3C3D37")
  '(ffip-prune-patterns
-   '("*/.git" "*/.svn" "*/.cvs" "*/.tox" "*/.bzr" "*/.hg" "*/.DS_Store" "*/.sass-cache" "*/elpy" "*/dcache" "*/.npm" "*/.tmp" "*/.idea" "*/node_modules" "*/bower_components" "*/.gradle" "*/.cask" "*/venv" "*/vendor_download"))
+   '("*/.git" "*/.svn" "*/.cvs" "*/.tox" "*/.bzr" "*/.hg" "*/.DS_Store" "*/.sass-cache" "*/elpy" "*/dcache" "*/.npm" "*/.tmp" "*/.idea" "*/node_modules" "*/bower_components" "*/.gradle" "*/.cask" "*/venv"))
  '(flycheck-color-mode-line-face-to-color 'mode-line-buffer-id)
  '(format-all-default-formatters
    '(("Assembly" asmfmt)
