@@ -25,6 +25,10 @@
   confirm-kill-emacs nil          ; Don't nag about unsaved files
   vc-follow-symlinks t            ; just follow the god dam symlink, man
   compilation-ask-about-save nil
+  ; Very big undo limits. History can be precious.
+  undo-limit 10000000
+  undo-strong-limit 12000000
+  undo-outer-limit 150000000
 )
 
 ; (add-to-list 'default-frame-alist '(fullscreen . maximized)) ;; start in fullscreen
