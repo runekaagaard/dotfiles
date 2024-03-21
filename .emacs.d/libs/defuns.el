@@ -560,5 +560,26 @@ it appears in the minibuffer prompt."
              (toggle-or-run-mode ',open-command ',opened-mode)))
     fname))
 
+(defun rk-wrap-tc8-python-string ()
+  (interactive)
+  (save-excursion
+    (let ((start-char (if (= (char-syntax (char-before)) ?\") "\"" "'"))
+          start end)
+      (search-backward start-char)
+      (setq start (point))
+      (forward-sexp)
+      (setq end (point))
+      (goto-char end)
+      (insert ")")
+      (goto-char start)
+      (insert "tc8("))))
+
+(global-set-key (kbd "C-c t") 'rk-wrap-tc8-python-string)
+
+(defun rk-imenu-clear-and-run ()
+  "Clears the imenu index and invokes imenu interactively."
+  (interactive)
+  (setq imenu--index-alist nil)
+  (call-interactively 'imenu))
 
 (provide 'defuns)

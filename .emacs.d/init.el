@@ -29,6 +29,8 @@
   undo-limit 10000000
   undo-strong-limit 12000000
   undo-outer-limit 150000000
+  ; ediff better defaults
+  ediff-split-window-function 'split-window-horizontally
 )
 
 ; (add-to-list 'default-frame-alist '(fullscreen . maximized)) ;; start in fullscreen
@@ -453,9 +455,10 @@
 (electric-indent-mode -1)
 
 ;; Allow external programs to open files in emacs
-(require 'cmd-server)
+(ignore-errors
+  (require 'cmd-server)
 ;(ignore-errors
-  (cmd-server-start)
+  (cmd-server-start))
 ;)
 
 ;;; org-mode ;;;
@@ -554,7 +557,6 @@ t))
   (modify-syntax-entry ?_ "w"))
 
 (add-hook 'after-change-major-mode-hook 'rk-great-syntax-table)
-
 
 ;; Keyboard commands
 ;; Keybindings.
@@ -663,7 +665,7 @@ t))
   ("s-m" . mc/edit-lines )
   ;("s-," . notmuch)
   ; .
-  ("C-." . imenu)
+  ("C-." . rk-imenu-clear-and-run)
   ; -
   ("s--" . er/expand-region)
   ; RET
